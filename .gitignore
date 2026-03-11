@@ -1,6 +1,5 @@
 .vs/
 x64/
-Intermediates/
 *.exe 
 *.ilk 
 *.pdb 
@@ -12,5 +11,3 @@ Intermediates/
 *.lastbuildstate 
 *.suo 
 *.db
-
-!/**/Dependencies/**/x64/
