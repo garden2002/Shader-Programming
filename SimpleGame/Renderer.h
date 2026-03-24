@@ -43,5 +43,7 @@ private:
 	GLuint m_VBOParticles = 0;
 	GLuint m_ParticlesShader = 0;
 	int m_TriangleCount = 0;
+
+	static constexpr int g_nInformationcount = 8;
 };
 

@@ -1,6 +1,11 @@
 #include "stdafx.h"
 #include "Renderer.h"
 
+static std::random_device rd;
+static std::default_random_engine dre(rd());
+static std::uniform_real_distribution<float> urd(0.f, 1.f);
+static std::uniform_real_distribution<float> velocity(-2.f, 2.f);
+
 Renderer::Renderer(int windowSizeX, int windowSizeY)
 {
 	Initialize(windowSizeX, windowSizeY);
@@ -45,34 +50,33 @@ void Renderer::CreateTriangleVBO(int count)
 		m_VBOParticles = 0;
 	}
 
-	float size = 0.05f;
-	int floatsPerVertex = 6;       // x, y, z, mass, vx, vy
+	float size = 0.01f;
+	int floatsPerVertex = 7;       // x, y, z, mass, vx, vy
 	int verticesPerTriangle = 6;   // 삼각형 1개 = 정점 6개 (두 삼각형)
-
 	std::vector<float> triangleData;
 	triangleData.reserve(count * verticesPerTriangle * floatsPerVertex);
 
-	srand(42); // 재현 가능한 난수
+	float cx = 0;
+	float cy = 0;
 	for (int i = 0; i < count; i++)
 	{
-		// 각 삼각형마다 랜덤 위치/속도
-		float cx = ((float)rand() / RAND_MAX) * 2.f - 1.f; // -1 ~ 1
-		float cy = ((float)rand() / RAND_MAX) * 2.f - 1.f;
-		float mass = 1.f;
-		float vx = ((float)rand() / RAND_MAX) * 2.f - 1.f;
-		float vy = ((float)rand() / RAND_MAX) * 2.f - 1.f;
 
-		float verts[6][6] = {
-			{ cx - size / 2, cy - size / 2, 0, mass, vx, vy },
-			{ cx + size / 2, cy - size / 2, 0, mass, vx, vy },
-			{ cx + size / 2, cy + size / 2, 0, mass, vx, vy }, // triangle1
-			{ cx - size / 2, cy - size / 2, 0, mass, vx, vy },
-			{ cx + size / 2, cy + size / 2, 0, mass, vx, vy },
-			{ cx - size / 2, cy + size / 2, 0, mass, vx, vy }, // triangle2
+		float mass = 1.f;
+		float vx = velocity(dre);
+		float vy = velocity(dre);
+		float rv = urd(dre);
+		float rv1 = urd(dre);
+		float verts[6][g_nInformationcount] = {
+			{ cx - size / 2, cy - size / 2, 0, mass, vx, vy, rv, rv1},
+			{ cx + size / 2, cy - size / 2, 0, mass, vx, vy, rv, rv1},
+			{ cx + size / 2, cy + size / 2, 0, mass, vx, vy, rv, rv1}, // triangle1
+			{ cx - size / 2, cy - size / 2, 0, mass, vx, vy, rv, rv1},
+			{ cx + size / 2, cy + size / 2, 0, mass, vx, vy, rv, rv1},
+			{ cx - size / 2, cy + size / 2, 0, mass, vx, vy, rv, rv1}, // triangle2
 		};
 
 		for (int v = 0; v < 6; v++)
-			for (int f = 0; f < 6; f++)
+			for (int f = 0; f < g_nInformationcount; f++)
 				triangleData.push_back(verts[v][f]);
 	}
 
@@ -297,18 +301,30 @@ void Renderer::DrawParticles(int count)
 	int attribMass = glGetAttribLocation(m_ParticlesShader, "a_Mass");
 	glEnableVertexAttribArray(attribMass);
 	int attribVel = glGetAttribLocation(m_ParticlesShader, "a_Vel");
-	glEnableVertexAttribArray(attribVel); // ← 기존 버그 수정 (attribMass로 잘못됨)
+	glEnableVertexAttribArray(attribVel);
+	int attribRv = glGetAttribLocation(m_ParticlesShader, "a_Rv");
+	glEnableVertexAttribArray(attribRv);
+	int attribRv1 = glGetAttribLocation(m_ParticlesShader, "a_Rv1");
+	glEnableVertexAttribArray(attribRv1);
+
+
+
+
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBOParticles);
-	glVertexAttribPointer(attribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (GLvoid*)(sizeof(float) * 0));
-	glVertexAttribPointer(attribMass, 1, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (GLvoid*)(sizeof(float) * 3));
-	glVertexAttribPointer(attribVel, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (GLvoid*)(sizeof(float) * 4));
+	glVertexAttribPointer(attribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(float) * g_nInformationcount, (GLvoid*)(sizeof(float) * 0));
+	glVertexAttribPointer(attribMass, 1, GL_FLOAT, GL_FALSE, sizeof(float) * g_nInformationcount, (GLvoid*)(sizeof(float) * 3));
+	glVertexAttribPointer(attribVel, 2, GL_FLOAT, GL_FALSE, sizeof(float) * g_nInformationcount, (GLvoid*)(sizeof(float) * 4));
+	glVertexAttribPointer(attribRv, 1, GL_FLOAT, GL_FALSE, sizeof(float) * g_nInformationcount, (GLvoid*)(sizeof(float) * 6));
+	glVertexAttribPointer(attribRv1, 1, GL_FLOAT, GL_FALSE, sizeof(float) * g_nInformationcount, (GLvoid*)(sizeof(float) * 7));
 
 	glDrawArrays(GL_TRIANGLES, 0, 6 * count); // ← count만큼 정점 수 확장
 
 	glDisableVertexAttribArray(attribPosition);
 	glDisableVertexAttribArray(attribMass);
 	glDisableVertexAttribArray(attribVel);
+	glDisableVertexAttribArray(attribRv);
+	glDisableVertexAttribArray(attribRv1);
 }
 
 void Renderer::GetGLPosition(float x, float y, float *newX, float *newY)
