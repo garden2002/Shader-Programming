@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <string>
 #include <cstdlib>
@@ -44,6 +44,6 @@ private:
 	GLuint m_ParticlesShader = 0;
 	int m_TriangleCount = 0;
 
-	static constexpr int g_nInformationcount = 8;
+	static constexpr int g_nInformationcount = 9;
 };
 

@@ -1,4 +1,4 @@
-#version 330
+﻿#version 330
 
 uniform float u_Time;
 
@@ -7,6 +7,18 @@ in float a_Mass;
 in vec2 a_Vel;
 const float c_PI = 3.141592;
 const float c_G = -9.8;
+
+void Sin0()
+{
+    float t = mod(u_Time * 2.0 , 1.0);
+    vec4 newPosition;
+    newPosition.x = a_Position.x + t;
+    newPosition.y = a_Position.y + 0.5 * sin(t * 2 * c_PI);
+    newPosition.z = 0;
+    newPosition.w = 1;
+    gl_Position = newPosition;  
+}
+
  
 void Sin1()
 {
@@ -96,5 +108,5 @@ void Falling()
 
 void main()
 {
-    Falling();
+    Sin0();
 }
