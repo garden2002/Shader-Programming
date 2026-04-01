@@ -1,5 +1,7 @@
 ﻿#version 330
 
+uniform float u_Time;
+
 in vec3 a_Pos;
 in vec2 a_TPos;
 out vec2 v_Tpos;

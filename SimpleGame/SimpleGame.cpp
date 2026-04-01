@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 {
 	// Initialize GL things
 	int width = 1280;
-	int height = 720;
+	int height = 1280;
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(0, 0);
