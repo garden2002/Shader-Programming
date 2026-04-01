@@ -24,8 +24,9 @@ void Sin0()
     float newTime = u_Time - startTime;
     if(newTime > 0.0)
     {
-        float t = mod(newTime * 2.f, 1);
-        float amp = (1 - t) * 0.1f * ((a_Rv - 0.5) * 2);
+        float lifeTime = 0.5 + a_Life * 2.0;
+        float t = mod(newTime * 2.f, lifeTime);
+        float amp = (lifeTime - t) * 0.1f * ((a_Rv - 0.5) * 2);
         float period = 0.2f + rand(a_Rv);
         vec4 newPosition;
         newPosition.x = a_Position.x + t;
@@ -33,7 +34,7 @@ void Sin0()
         newPosition.z = 0;
         newPosition.w = 1;
         gl_Position = newPosition;  
-        v_Grey = (1 - t);
+        v_Grey = (lifeTime - t);
     }
     else{
         gl_Position = vec4(-1000 , 0 , 0 ,1);

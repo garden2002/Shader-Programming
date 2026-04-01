@@ -25,7 +25,8 @@ void RenderScene(void)
 	// Renderer Test
 	//g_Renderer->DrawSolidRect(0, 0, 0, 4, 1, 0, 1, 1);
 	//g_Renderer->DrawTriangle();
-	g_Renderer->DrawParticles(5000);
+	//g_Renderer->DrawParticles();
+	g_Renderer->DrawFS();
 	glutSwapBuffers();
 }
 
@@ -52,10 +53,12 @@ void SpecialKeyInput(int key, int x, int y)
 int main(int argc, char **argv)
 {
 	// Initialize GL things
+	int width = 1280;
+	int height = 720;
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(0, 0);
-	glutInitWindowSize(500, 500);
+	glutInitWindowSize(width, height);
 	glutCreateWindow("Game Software Engineering TUKOREA");
 
 	glewInit();
@@ -69,7 +72,7 @@ int main(int argc, char **argv)
 	}
 
 	// Initialize Renderer
-	g_Renderer = new Renderer(500, 500);
+	g_Renderer = new Renderer(width, height);
 	if (!g_Renderer->IsInitialized())
 	{
 		std::cout << "Renderer could not be initialized.. \n";

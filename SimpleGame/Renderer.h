@@ -17,15 +17,14 @@ public:
 	
 	void DrawSolidRect(float x, float y, float z, float size, float r, float g, float b, float a);
 	void DrawTriangle();
-	void DrawParticles(int count);
+	void DrawParticles();
+	void DrawFS();
 private:
 	void Initialize(int windowSizeX, int windowSizeY);
 	bool ReadFile(char* filename, std::string *target);
 	void AddShader(GLuint ShaderProgram, const char* pShaderText, GLenum ShaderType);
 	GLuint CompileShaders(char* filenameVS, char* filenameFS);
 	void CreateVertexBufferObjects();
-
-	void CreateTriangleVBO(int count);
 
 	void GetGLPosition(float x, float y, float *newX, float *newY);
 
@@ -42,7 +41,10 @@ private:
 
 	GLuint m_VBOParticles = 0;
 	GLuint m_ParticlesShader = 0;
-	int m_TriangleCount = 0;
+	static constexpr int m_ParticleCount = 10;
+
+	GLuint m_VBOFS = 0;
+	GLuint m_FSShader = 0;
 
 	static constexpr int g_nInformationcount = 9;
 };
