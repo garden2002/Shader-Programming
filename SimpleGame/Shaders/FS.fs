@@ -1,11 +1,15 @@
 ﻿#version 330
 
+
+
 uniform float u_Time;
 
 layout(location=0) out vec4 FragColor;
 in vec2 v_Tpos;
 
 const float c_PI = 3.141592;
+
+uniform vec4 u_DropInfo[1000]; // x,y: center, z: startTime, w: lifeTime
 
 void simple()
 {
@@ -47,13 +51,15 @@ void Circle()
 
 void CircleSin()
 {
-	float t = u_Time * 20;
+	float t = u_Time * 100;
 	vec2 center = vec2(0.5,0.5);
 	vec2 currpos = v_Tpos;
 	float dist = distance(center,currpos);
 	float value = abs(sin(dist * c_PI * 16 - t));
 	FragColor = vec4(pow(value,16));
 }
+
+
 
 void Fractal()
 {
@@ -101,7 +107,76 @@ void Fractal()
     FragColor = vec4(col, 1.0);
 }
 
+// ==================== 원본 RainDrop (버그 보존) ====================
+// void RainDrop()
+// {
+// 	float accum = 0;
+// 	for(int i = 0; i < 1000; ++i){
+// 		float lifeTime = u_DropInfo[i].z; // [버그] z는 startTime인데 lifeTime으로 읽음
+// 		float startTime = u_DropInfo[i].w; // [버그] w는 lifeTime인데 startTime으로 읽음
+//
+// 		float newtime = u_Time - startTime;
+//
+// 		if (newtime > 0){
+// 			newtime = fract(newtime * 20/lifeTime); // [문제] * 20 의도 불명확, fract 후 * lifeTime 하면 의미 없음
+// 			float oneMinus = 1 - newtime;
+// 			float t = newtime * lifeTime;
+//
+// 			vec2 center = u_DropInfo[i].xy;
+// 			vec2 currpos = v_Tpos;
+//
+// 			float range = t / 30; // [문제] 30이 하드코딩, t 스케일이 lifeTime에 따라 달라짐
+// 			float dist = distance(center,currpos);
+//
+// 			float fade = 20 * clamp(range - dist,0,1); // [문제] edge가 날카롭고 range 밖은 전부 0
+//
+// 			float value = pow(abs(sin(dist * c_PI * 4 - t)),32); // t 단위가 맞지 않아 파형 속도 불안정
+// 			accum += value * fade * oneMinus;
+// 		}
+// 		else{ }
+// 		FragColor = vec4(vec3(accum), 1.0); // [버그] 루프 안에 있어서 매 iteration마다 덮어씌워짐 -> accum 누적 의미 없음
+// 	}
+// }
+// ===================================================================
+
+void RainDrop()
+{
+	float accum = 0.0;
+
+	for(int i = 0; i < 1000; ++i){
+		float startTime = u_DropInfo[i].z; // z: startTime (주석 기준 수정)
+		float lifeTime  = u_DropInfo[i].w; // w: lifeTime  (주석 기준 수정)
+
+		if(lifeTime <= 0.0) continue;
+
+		float elapsed = u_Time - startTime; // 빗방울 생성 후 경과 시간
+
+		if(elapsed < 0.0 || elapsed > lifeTime) continue; // 수명 범위 밖이면 건너뜀
+
+		float progress = elapsed / lifeTime; // 0.0(시작) ~ 1.0(소멸), 정규화된 진행도
+		float fadeOut  = 1.0 - progress;     // 시간이 지날수록 투명해짐
+
+		vec2  center = u_DropInfo[i].xy;
+		float dist   = distance(center, v_Tpos);
+
+		float maxRadius = 0.35;             // 최대 확산 반경 (UV 공간)
+		float radius    = progress * maxRadius; // 현재 파문 반경 (시간에 따라 증가)
+
+		// 파문 링: 현재 반경 근처 픽셀만 밝아지는 Gaussian ring
+		float ringWidth = 0.015 + progress * 0.01; // 시간이 지날수록 링이 약간 퍼짐
+		float wave = exp(-pow((dist - radius) / ringWidth, 2.0));
+
+		// 중심에서 멀어질수록 추가로 감쇠
+		float distFade = exp(-dist * 3.0);
+
+		accum += wave * fadeOut * distFade;
+	}
+
+	accum = clamp(accum, 0.0, 1.0);
+	FragColor = vec4(vec3(accum), 1.0); // [수정] 루프 밖에서 한 번만 출력
+}
+
 void main()
 { 
-	Fractal();
+	RainDrop();
 }

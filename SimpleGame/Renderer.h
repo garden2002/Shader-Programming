@@ -47,5 +47,8 @@ private:
 	GLuint m_FSShader = 0;
 
 	static constexpr int g_nInformationcount = 9;
+
+
+	float m_DropPoints[1000 * 4];
 };
 

@@ -4,6 +4,7 @@
 static std::random_device rd;
 static std::default_random_engine dre(rd());
 static std::uniform_real_distribution<float> urd(0.f, 1.f);
+static std::uniform_real_distribution<float> screen(-1.f, 1.f);
 static std::uniform_real_distribution<float> velocity(-2.f, 2.f);
 
 Renderer::Renderer(int windowSizeX, int windowSizeY)
@@ -29,6 +30,24 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	m_FSShader = CompileShaders("./Shaders/FS.vs", "./Shaders/FS.fs");
 	//Create VBOs
 	CreateVertexBufferObjects();
+
+	// x,y: center, z: startTime, w: lifeTime
+	int index = 0;
+	for (int i = 0; i < 1000; ++i) {
+		float x = urd(dre);
+		float y = urd(dre);
+		float stime = urd(dre) * 3.f; // 0 ~ 5초 사이의 랜덤한 시간
+		float ltime = urd(dre);
+
+		m_DropPoints[index] = x;
+		index++;
+		m_DropPoints[index] = y;
+		index++;
+		m_DropPoints[index] = stime;
+		index++;
+		m_DropPoints[index] = ltime;
+		index++;
+	}
 
 	if (m_SolidRectShader > 0 && m_TriangleShader > 0 
 		&& m_VBORect > 0 && m_VBOTriangle > 0)
@@ -344,8 +363,11 @@ void Renderer::DrawFS()
 	glUseProgram(m_FSShader);
 	g_time += 0.001f;
 
-	int uTime = glGetUniformLocation(m_ParticlesShader, "u_Time");
+	int uTime = glGetUniformLocation(m_FSShader, "u_Time");
 	glUniform1f(uTime, g_time);
+
+	int uPoints = glGetUniformLocation(m_FSShader, "u_DropInfo");
+	glUniform4fv(uPoints, 1000 , m_DropPoints);
 
 	int attribPos = glGetAttribLocation(m_FSShader, "a_Pos");
 	glEnableVertexAttribArray(attribPos);
