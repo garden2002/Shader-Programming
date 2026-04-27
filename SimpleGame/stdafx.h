@@ -6,3 +6,4 @@
 #include <tchar.h>
 #include <vector>
 #include <random>
+#include <assert.h>

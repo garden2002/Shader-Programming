@@ -21,6 +21,7 @@ public:
 	void DrawFS();
 private:
 	void Initialize(int windowSizeX, int windowSizeY);
+	GLuint CreatePngTexture(char* filePath, GLuint samplingMethod);
 	bool ReadFile(char* filename, std::string *target);
 	void AddShader(GLuint ShaderProgram, const char* pShaderText, GLenum ShaderType);
 	GLuint CompileShaders(char* filenameVS, char* filenameFS);
@@ -50,5 +51,10 @@ private:
 
 
 	float m_DropPoints[1000 * 4];
+
+
+	GLuint m_RGBTexture = 0;
+	GLuint m_NumTexture[10];
+	GLuint m_NumbersTexture = 0;
 };
 
