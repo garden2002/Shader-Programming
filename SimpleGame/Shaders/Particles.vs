@@ -70,7 +70,7 @@ void Falling()
 
 
 void main() {
-    Sin0();
+    Falling();
 }
 
 

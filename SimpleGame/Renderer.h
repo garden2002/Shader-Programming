@@ -42,7 +42,7 @@ private:
 
 	GLuint m_VBOParticles = 0;
 	GLuint m_ParticlesShader = 0;
-	static constexpr int m_ParticleCount = 10;
+	static constexpr int m_ParticleCount = 10000;
 
 	GLuint m_VBOFS = 0;
 	GLuint m_FSShader = 0;

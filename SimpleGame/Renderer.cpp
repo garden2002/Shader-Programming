@@ -31,11 +31,11 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	m_ParticlesShader = CompileShaders("./Shaders/Particles.vs", "./Shaders/Particles.fs");
 	m_FSShader = CompileShaders("./Shaders/FS.vs", "./Shaders/FS.fs");
 	//Create VBOs
-	m_RGBTexture = CreatePngTexture("./Textures/rgb.png", GL_NEAREST);
-	m_NumbersTexture = CreatePngTexture("./Textures/Numbers.png", GL_NEAREST);
-	for (int i = 0; i < 9; ++i) {
+	m_RGBTexture = CreatePngTexture("./Textures/rgb.png", GL_NEAREST);  // 0 Slot
+	m_NumbersTexture = CreatePngTexture("./Textures/Numbers.png", GL_NEAREST); // 1 Slot
+	for (int i = 0; i < 10; ++i) {
 		std::string path = "./Textures/" + std::to_string(i) + ".png";
-		m_NumTexture[i] = CreatePngTexture((char*)path.c_str(), GL_NEAREST);
+		m_NumTexture[i] = CreatePngTexture((char*)path.c_str(), GL_NEAREST); //2 ~ 11 Slot
 	}
 
 	CreateVertexBufferObjects();
@@ -411,7 +411,7 @@ void Renderer::GetGLPosition(float x, float y, float *newX, float *newY)
 	*newY = y * 2.f / m_WindowSizeY;
 }
 
-
+int g_CurrNum = 0;
 void Renderer::DrawFS()
 {
 	//Program select
@@ -422,10 +422,56 @@ void Renderer::DrawFS()
 	glUniform1f(uTime, g_time);
 
 	int uRGBTex = glGetUniformLocation(m_FSShader, "u_RGBTex");
-	glUniform1i(uTime, 0);
+	glUniform1i(uRGBTex, 0); 
+
+	int uNumsTex = glGetUniformLocation(m_FSShader, "u_NumsTex");
+	glUniform1i(uNumsTex, 1);
+
+	int uCurrNumTex = glGetUniformLocation(m_FSShader, "u_CurrNumTex");
+	glUniform1i(uCurrNumTex, g_CurrNum + 2);
+	g_CurrNum++;
+	if (g_CurrNum > 9) 
+		g_CurrNum = 0;
+	//Sleep(500);
+
+	int uInputNum = glGetUniformLocation(m_FSShader, "u_InputNum");
+	glUniform1i(uInputNum, g_CurrNum);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_RGBTexture);
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, m_NumbersTexture);
+
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[0]);
+
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[1]);
+
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[2]);
+
+	glActiveTexture(GL_TEXTURE5);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[3]);
+
+	glActiveTexture(GL_TEXTURE6);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[4]);
+
+	glActiveTexture(GL_TEXTURE7);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[5]);
+
+	glActiveTexture(GL_TEXTURE8);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[6]);
+
+	glActiveTexture(GL_TEXTURE9);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[7]);
+
+	glActiveTexture(GL_TEXTURE10);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[8]);
+
+	glActiveTexture(GL_TEXTURE11);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[9]);
 
 	int uPoints = glGetUniformLocation(m_FSShader, "u_DropInfo");
 	glUniform4fv(uPoints, 1000 , m_DropPoints);
