@@ -8,8 +8,12 @@ in vec2 a_Vel;
 in float a_Rv;
 in float a_Rv1;
 in float a_Life;
+in vec2 a_Tex;
+in vec3 a_RGB;
 
 out float v_Grey;
+out vec3 v_Color;
+out vec2 v_Tex;
 
 const float c_PI = 3.141592;
 const float c_G = -9.8;
@@ -68,9 +72,34 @@ void Falling()
     
 }
 
+void Shape(){
+    float lifeTime = 0.5 + a_Life * 5.0;
+    float startTime = a_Rv1 * 5.0;
+    float newTime = u_Time - startTime;
+    vec2 newVel = a_Vel * 0.5f;
+    if(newTime > 0.0){
+        float t = fract(newTime/lifeTime) * lifeTime;
+        float tt = t * t;
+
+        float newX = a_Position.x + newVel.x * t;
+        float newY = a_Position.y + newVel.y * t;
+
+        gl_Position = vec4(newX,newY, 0 , 1);
+        
+    }
+    else{
+        gl_Position = vec4(-1000 , 0 , 0 ,1);
+    }
+    v_Color = a_RGB;
+    v_Grey =1.0 - fract(newTime * 2.f/lifeTime);
+    v_Tex = a_Tex; 
+}
+
+
+
 
 void main() {
-    Falling();
+    Shape();
 }
 
 

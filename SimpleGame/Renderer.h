@@ -19,6 +19,7 @@ public:
 	void DrawTriangle();
 	void DrawParticles();
 	void DrawFS();
+	void DrawDummy();
 private:
 	void Initialize(int windowSizeX, int windowSizeY);
 	GLuint CreatePngTexture(char* filePath, GLuint samplingMethod);
@@ -26,6 +27,11 @@ private:
 	void AddShader(GLuint ShaderProgram, const char* pShaderText, GLenum ShaderType);
 	GLuint CompileShaders(char* filenameVS, char* filenameFS);
 	void CreateVertexBufferObjects();
+	void CreateRectVBO();
+	void CreateTriangleVBO();
+	void CreateParticleVBO();
+	void CreateFSVBO();
+	void CreateDummyVBO(int resolX, int resolY);
 
 	void GetGLPosition(float x, float y, float *newX, float *newY);
 
@@ -47,8 +53,13 @@ private:
 	GLuint m_VBOFS = 0;
 	GLuint m_FSShader = 0;
 
-	static constexpr int g_nInformationcount = 9;
+	static constexpr int g_nInformationcount = 14;
 
+
+	GLuint m_VBODummy = 0;
+	GLuint m_DummyShader = 0;
+
+	int g_DummyVertexCount = 0;
 
 	float m_DropPoints[1000 * 4];
 
@@ -56,5 +67,7 @@ private:
 	GLuint m_RGBTexture = 0;
 	GLuint m_NumTexture[10];
 	GLuint m_NumbersTexture = 0;
+	GLuint m_ParticleTexture = 0;
+	GLuint m_ParticleSpriteTexture = 0;
 };
 
