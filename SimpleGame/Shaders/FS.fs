@@ -320,5 +320,5 @@ void Nums()
 
 void main()
 { 
-	Num();
+	RainDrop();
 }

@@ -69,5 +69,6 @@ private:
 	GLuint m_NumbersTexture = 0;
 	GLuint m_ParticleTexture = 0;
 	GLuint m_ParticleSpriteTexture = 0;
+	GLuint m_YenaTexture = 0;
 };
 

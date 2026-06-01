@@ -40,6 +40,7 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	}
 	m_ParticleTexture = CreatePngTexture("./Textures/Particle.png", GL_NEAREST);
 	m_ParticleSpriteTexture = CreatePngTexture("./Textures/SpriteParticle.png", GL_NEAREST);
+	m_YenaTexture = CreatePngTexture("./Textures/Yena.png", GL_NEAREST);
 
 	CreateVertexBufferObjects();
 
@@ -597,6 +598,12 @@ void Renderer::DrawDummy()
 {
 	//Program select
 	glUseProgram(m_DummyShader);
+
+	int uYenaTex = glGetUniformLocation(m_DummyShader, "u_YenaTex");
+	glUniform1i(uYenaTex, 0);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_YenaTexture);
 
 	g_time += 0.001f;
 
