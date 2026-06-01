@@ -126,7 +126,7 @@ void Renderer::CreateVertexBufferObjects()
 	CreateTriangleVBO();
 	CreateParticleVBO();
 	CreateFSVBO();
-	CreateDummyVBO(8 , 8);
+	CreateDummyVBO(64 , 64);
 }
 
 void Renderer::CreateRectVBO()
@@ -230,8 +230,8 @@ void Renderer::CreateDummyVBO(int resolX ,int resolY)
 	float basePosY = -0.5f;
 	float targetPosX = 0.5f;
 	float targetPosY = 0.5f;
-	int pointCountX = 8;
-	int pointCountY = 8;
+	int pointCountX = resolX;
+	int pointCountY = resolY;
 	float width = targetPosX - basePosX;
 	float height = targetPosY - basePosY;
 	float* point = new float[pointCountX * pointCountY * 2];
@@ -598,6 +598,11 @@ void Renderer::DrawDummy()
 	//Program select
 	glUseProgram(m_DummyShader);
 
+	g_time += 0.001f;
+
+	int uTime = glGetUniformLocation(m_DummyShader, "u_Time");
+	glUniform1f(uTime, g_time);
+
 	int attribPosition = glGetAttribLocation(m_DummyShader, "a_Position");
 	glEnableVertexAttribArray(attribPosition);
 
@@ -605,7 +610,7 @@ void Renderer::DrawDummy()
 	glVertexAttribPointer(attribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
 
 
-	glDrawArrays(GL_LINE_STRIP, 0, g_DummyVertexCount);
+	glDrawArrays(GL_TRIANGLES, 0, g_DummyVertexCount);
 
 	glDisableVertexAttribArray(attribPosition);
 
